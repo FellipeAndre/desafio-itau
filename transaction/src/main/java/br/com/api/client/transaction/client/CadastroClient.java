@@ -5,5 +5,5 @@ import br.com.api.client.transaction.model.ClientResponse;
 
 public interface CadastroClient {
 
-    ClientResponse consultarCadastro(ClientRequest request);
+    ClientResponse consultarCadastro(String cpf);
 }

@@ -4,6 +4,7 @@ import br.com.api.client.transaction.model.ClientRequest;
 import br.com.api.client.transaction.service.ConectClientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,12 +12,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TransactionController {
 
-    private ConectClientService conectClientService;
+    private final ConectClientService conectClientService;
 
-     @GetMapping
-     public String teste(@RequestBody @Valid ClientRequest request){
+     @GetMapping("/{cpf}")
+     @ResponseStatus(HttpStatus.OK)
+     public String getClientCpf(@PathVariable @Valid String cpf){
 
-         //conectClientService.getClient("teste");
+         conectClientService.getClient(cpf);
 
          return "Seja bem vindo a Api de consultar e notificar";
      }

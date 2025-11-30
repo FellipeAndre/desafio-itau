@@ -15,8 +15,8 @@ public class CadastroClientImpl implements CadastroClient {
 
     //TODO CRIAR CIRCUT BREAK PARA CENARIOS DE FALHA
     @Override
-    public ClientResponse consultarCadastro(ClientRequest request) {
-        return cadastroClient.consultar(request);
+    public ClientResponse consultarCadastro(String cpf) {
+        return cadastroClient.consultar(cpf);
     }
 
     public void clientFallBack(){

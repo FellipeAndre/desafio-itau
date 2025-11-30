@@ -14,9 +14,9 @@ public class ConectClientService{
     private final BacenClientImpl bacenClient;
     private final CadastroClientImpl cadastroClient;
 
-    public void getClient(String nome){
+    public void getClient(String cpf){
         ClientRequest request = new ClientRequest();
-        cadastroClient.consultarCadastro(request);
+        cadastroClient.consultarCadastro(cpf);
 
         RequestBacen requestBacen = new RequestBacen();
         this.bacenNotify(requestBacen);
