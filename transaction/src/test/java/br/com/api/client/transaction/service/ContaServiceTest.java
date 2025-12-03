@@ -3,6 +3,7 @@ package br.com.api.client.transaction.service;
 import br.com.api.client.transaction.client.BacenClient;
 import br.com.api.client.transaction.enumerable.TipoTransacao;
 import br.com.api.client.transaction.exception.DisableAccountException;
+import br.com.api.client.transaction.exception.ErroBacenIndisponivelException;
 import br.com.api.client.transaction.exception.LimiteIndisponivelException;
 import br.com.api.client.transaction.model.BacenResponse;
 import br.com.api.client.transaction.model.ClientResponse;
@@ -125,14 +126,17 @@ class ContaServiceTest {
     }
 
     @Test
-    void transferirNotificarBacen() {
+    void transferirNotificarBacenException() {
 
         var response = new ClientResponse();
         var conta = new ContaResponse();
         var dados = new DadosTransferencia();
+        var bacen = new BacenResponse("Sistema Insdisponivel", 429);
+
         dados.setNome("teste");
         dados.setSaida(40.0);
         dados.setNumeroConta("0001");
+        dados.setResponseBacen(bacen);
         List<DadosTransferencia> dadosTransferencias = new ArrayList<>();
         dadosTransferencias.add(dados);
         conta.setSaldo(4000.0);
@@ -141,11 +145,37 @@ class ContaServiceTest {
         response.setNome("teste");
         response.setContaResponse(conta);
 
+        Mockito.when(bacenClient.notificarBacen(dados)).thenReturn(bacen);
+
+        Assertions.assertThrows(ErroBacenIndisponivelException.class, () ->{
+            contaService.validarConta(conta, TipoTransacao.TRANSFERIR);
+        });
+    }
+
+    @Test
+    void transferirNotificarSucesso() {
+
+        var response = new ClientResponse();
+        var conta = new ContaResponse();
+        var dados = new DadosTransferencia();
+        var bacen = new BacenResponse("Transferencia Concluida", 200);
+
+        dados.setNome("teste");
+        dados.setSaida(40.0);
+        dados.setNumeroConta("0001");
+        dados.setResponseBacen(bacen);
+        List<DadosTransferencia> dadosTransferencias = new ArrayList<>();
+        dadosTransferencias.add(dados);
+        conta.setSaldo(4000.0);
+        conta.setContaAtiva(true);
+        conta.setTransferencias(dadosTransferencias);
+        response.setNome("teste");
+        response.setContaResponse(conta);
+
+        Mockito.when(bacenClient.notificarBacen(dados)).thenReturn(bacen);
+
         var result = contaService.validarConta(conta, TipoTransacao.TRANSFERIR);
 
-        Assertions.assertNotNull(result);
-
-        Mockito.verify(bacenClient, Mockito.times(1)).notificarBacen(dados);
-
+        Assertions.assertNotNull(result);3
     }
 }

@@ -9,8 +9,6 @@ import br.com.api.client.transaction.model.BacenResponse;
 import br.com.api.client.transaction.model.ContaResponse;
 import br.com.api.client.transaction.model.DadosTransferencia;
 import br.com.api.client.transaction.service.ContaService;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +25,6 @@ public class ContaServiceImpl implements ContaService {
     @Override
     public ContaResponse validarConta(ContaResponse contaResponse, TipoTransacao transacao) {
         var activeAccount = contaResponse.getContaAtiva();
-        BacenResponse bacen = new BacenResponse();
         List<DadosTransferencia> transferencia = new ArrayList<>();
         var valorTransferencias = 0.0;
 
@@ -51,8 +48,8 @@ public class ContaServiceImpl implements ContaService {
             if (valorTransferencias > contaResponse.getLimiteDiario()) {
                 throw new LimiteIndisponivelException("O seu limite diario é de até 1000 reais ");
             } else {
-               bacen = bacenClient.notificarBacen(transferencia.get(0));
-               checarResponseBacen(bacen.getCod());
+                BacenResponse bacen = bacenClient.notificarBacen(transferencia.get(0));
+               checarResponseBacen(bacen);
                contaResponse.getTransferencias().get(0).setResponseBacen(bacen);
             }
         }
@@ -60,9 +57,9 @@ public class ContaServiceImpl implements ContaService {
         return contaResponse;
     }
 
-    private void checarResponseBacen(Integer cod){
-        if(cod == ERRO_BACEN){
-            throw new ErroBacenIndisponivelException();
+    private void checarResponseBacen(BacenResponse bacen){
+        if(bacen.getCod().equals(ERRO_BACEN)){
+            throw new ErroBacenIndisponivelException(bacen.getMessage());
         }
     }
 
