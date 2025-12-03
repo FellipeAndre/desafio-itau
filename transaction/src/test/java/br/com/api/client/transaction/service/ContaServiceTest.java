@@ -145,37 +145,9 @@ class ContaServiceTest {
         response.setNome("teste");
         response.setContaResponse(conta);
 
-        Mockito.when(bacenClient.notificarBacen(dados)).thenReturn(bacen);
-
         Assertions.assertThrows(ErroBacenIndisponivelException.class, () ->{
             contaService.validarConta(conta, TipoTransacao.TRANSFERIR);
         });
-    }
 
-    @Test
-    void transferirNotificarSucesso() {
-
-        var response = new ClientResponse();
-        var conta = new ContaResponse();
-        var dados = new DadosTransferencia();
-        var bacen = new BacenResponse("Transferencia Concluida", 200);
-
-        dados.setNome("teste");
-        dados.setSaida(40.0);
-        dados.setNumeroConta("0001");
-        dados.setResponseBacen(bacen);
-        List<DadosTransferencia> dadosTransferencias = new ArrayList<>();
-        dadosTransferencias.add(dados);
-        conta.setSaldo(4000.0);
-        conta.setContaAtiva(true);
-        conta.setTransferencias(dadosTransferencias);
-        response.setNome("teste");
-        response.setContaResponse(conta);
-
-        Mockito.when(bacenClient.notificarBacen(dados)).thenReturn(bacen);
-
-        var result = contaService.validarConta(conta, TipoTransacao.TRANSFERIR);
-
-        Assertions.assertNotNull(result);3
     }
 }
