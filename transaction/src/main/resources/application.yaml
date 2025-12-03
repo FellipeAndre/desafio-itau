@@ -7,8 +7,8 @@ spring:
     client:
       config:
         default:
-          connectTimeout: 5000 #tempo maximo de se conectar com a api externa
-          readTimeout: 300  #tempo de r4esposta da api
+          connectTimeout: 5000
+          readTimeout: 300
           loggerLevel: FULL
   resilience4j:
     circuitbreaker:

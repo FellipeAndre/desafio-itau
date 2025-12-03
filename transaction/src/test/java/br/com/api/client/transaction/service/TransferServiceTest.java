@@ -1,11 +1,13 @@
 package br.com.api.client.transaction.service;
 
-import br.com.api.client.transaction.client.CadastroClient;
 import br.com.api.client.transaction.client.impl.BacenClientImpl;
 import br.com.api.client.transaction.client.impl.CadastroClientImpl;
+import br.com.api.client.transaction.enumerable.TipoTransacao;
 import br.com.api.client.transaction.model.ClientResponse;
 import br.com.api.client.transaction.model.ContaResponse;
 import br.com.api.client.transaction.model.DadosTransferencia;
+import br.com.api.client.transaction.service.impl.TransferService;
+import br.com.api.client.transaction.service.impl.ContaServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,13 +19,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(MockitoExtension.class)
-class ConectClientServiceTest {
+class TransferServiceTest {
 
     @InjectMocks
-    ConectClientService conectClientService;
+    TransferService conectClientService;
 
     @Mock
     BacenClientImpl bacenClient;
@@ -32,7 +32,7 @@ class ConectClientServiceTest {
     CadastroClientImpl cadastroClient;
 
     @Mock
-    ContaService contaService;
+    ContaServiceImpl contaService;
 
     @Test
     void getClient() {
@@ -51,15 +51,15 @@ class ConectClientServiceTest {
         response.setNome("teste");
         response.setContaResponse(conta);
 
-        Mockito.when(cadastroClient.consultarCadastro(Mockito.anyString())).thenReturn(response);
+        Mockito.when(cadastroClient.consultarSaldo(Mockito.anyString())).thenReturn(response);
 
-        var result = conectClientService.getClient(cpf);
+        var result = conectClientService.consultarSaldo(cpf);
 
         Assertions.assertNotNull(result);
 
         Mockito.verify(contaService, Mockito.times(1))
-                        .Transferir(conta, 40.0);
+                        .validarConta(conta, TipoTransacao.CONSULTAR);
         Mockito.verify(cadastroClient, Mockito.times(1))
-                .consultarCadastro(cpf);
+                .consultarSaldo(cpf);
     }
 }
